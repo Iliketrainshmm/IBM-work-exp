@@ -13,6 +13,7 @@ import urllib3
 import time
 import os
 import math
+from colorama import Fore
 faker = Faker()
 parser = argparse.ArgumentParser(description="API call faker")
 r = RandomWord()
@@ -37,7 +38,7 @@ def getuseragents():
     json_object = json.load(openfile)
   return json_object
 
-# 
+# Important variables for generating API data
 methods = {
     "method":[
         "GET",
@@ -76,7 +77,7 @@ config = getconfig()
 scopes = config["scopes"]
 sendreports = config["sendreports"]
 
-
+# Posts API data to Output
 def fakepost(filename, data):
   with jsonlines.open(str("Output/"+filename + ".txt"), mode="w") as writer:
     writer.write_all(data)

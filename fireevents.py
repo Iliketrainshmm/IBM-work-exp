@@ -1,3 +1,4 @@
+# Libraries
 from wonderwords import RandomWord
 import json
 import uuid
@@ -12,18 +13,19 @@ import urllib3
 import time
 import os
 import math
-from colorama import Fore
 faker = Faker()
 parser = argparse.ArgumentParser(description="API call faker")
 r = RandomWord()
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
+# Make folders
 if not os.path.isdir("Output"):
     os.makedirs("Output")
 
 if not os.path.isdir("Reports"):
     os.makedirs("Reports")
 
+# Extract from files for later
 def getconfig():
   with open(str("config" + ".json"), "r") as openfile:
     json_object = json.load(openfile)
@@ -35,27 +37,40 @@ def getuseragents():
     json_object = json.load(openfile)
   return json_object
 
-
-def getcodes():
-  with open(str("codes" + ".json"), "r") as openfile:
-    json_object = json.load(openfile)
-  return json_object
-
-
-def getaimodels():
-  with open(str("modelids" + ".json"), "r") as openfile:
-    json_object = json.load(openfile)
-  return json_object
-
-
-def getmethods():
-  with open(str("methods" + ".json"), "r") as openfile:
-    json_object = json.load(openfile)
-  return json_object
-
-
-methods = getmethods()
-ai_models = getaimodels()
+# 
+methods = {
+    "method":[
+        "GET",
+        "POST",
+        "PUT",
+        "DELETE",
+        "TRACE",
+        "OPTIONS",
+        "HEAD"
+    ],
+    "weights":[
+        0.45,
+        0.20,
+        0.10,
+        0.10,
+        0.05,
+        0.05,
+        0.05
+    ]
+}
+ai_models = [
+    "google/flan-ul2",
+    "granite-7b-lab",
+    "granite-13b-chat",
+    "granite-13b-instruct",
+    "llama-3-8b-instruct",
+    "llama-2-13b-chat",
+    "codellama-34b-instruct",
+    "mixtral-8x7b-instruct",
+    "merlinite-7b",
+    "flan-t6-xl-3b",
+    "starcoder-15.5b"
+]
 ai_models_length = len(ai_models)
 config = getconfig()
 scopes = config["scopes"]
@@ -203,12 +218,37 @@ if debugmode is True:
 useragents = getuseragents()
 
 # currenttime = datetime.datetime.now(datetime.UTC).isoformat()
-# 27days ago in epoch is 2332800
-# 30 days ago in epch is 2592000
+# 27 days ago in epoch is 2332800
+# 30 days ago in epoch is 2592000
 currenttimeepoch = int(time.time())
 oldtime = currenttimeepoch-2592000
 
-codedata = getcodes()
+codedata = {
+    "codes": [
+        "200 OK",
+        "201 Created",
+        "204 No Content",
+        "400 Bad Request",
+        "401 Unauthorized",
+        "403 Forbidden",
+        "404 Not Found",
+        "429 Too Many Requests",
+        "500 Internal Server Error",
+        "501 Not Implemented"
+    ],
+    "weights": [
+        0.25,
+        0.15,
+        0.10,
+        0.10,
+        0.10,
+        0.05,
+        0.05,
+        0.10,
+        0.05,
+        0.05
+    ]
+}
 statcodes = codedata["codes"]
 statcodeslength = len(statcodes)
 weights = codedata["weights"]

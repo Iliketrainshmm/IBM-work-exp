@@ -1,0 +1,71 @@
+Take input
+
+ 
+
+input args:
+
+  ingestion URL
+
+  number of apis
+
+  number of apps
+
+  number of corgs
+
+  number of products
+
+  number of calls to make
+
+ 
+
+generate lists of products, apis, apps, corgs
+
+ 
+
+loop over number of products
+
+  pick random product from list
+
+  pick api from that product
+
+  pick app and consuner org
+
+  generate other random attrubutes (such as IP address, date time, headers, payload etc)
+
+ 
+
+  generate api event payload
+
+  append to array of payloads
+
+ 
+
+for all the events in the array of payloads, fire them at ingestionURL
+
+
+products : {
+  "product1" : {
+    "productid" : id,
+    "productname" : "name",
+    "api1" : {
+      apiid : id,
+      apiname : "name"
+    },
+    "api2" : {
+      apiid : id,
+      apiname : "name"
+    }
+  },
+  "product2" : {
+    "productid" : id,
+    "productname" : "name",
+    "api1" : {
+      apiid : id,
+      apiname : "name"
+    },
+    "api2" : {
+      apiid : id,
+      apiname : "name"
+    }
+  }
+}

@@ -1,0 +1,289 @@
+{
+
+    "api_id": api_id, 
+  
+    "api_name": api_name,
+  
+    "api_resource_id": api_name +":1.0.0:get:/clothing/tshirts",
+  
+    "api_version": "1.0.0",
+  
+    "app_id": app_id,
+  
+    "app_lifecycle_state": "PRODUCTION",
+  
+    "app_name": app_name,
+  
+    "bytes_received": 0,
+  
+    "bytes_sent": 488,
+  
+    "catalog_id": "b20e8103-5b04-401d-a548-411367809909",
+  
+    "catalog_name": "sandbox_1",
+  
+    "client_id": client_id,
+  
+    "client_ip": "9.171.17.14",
+  
+    "datetime": "2022-09-23T19:59:38.044Z",
+  
+    "developer_org_id": corg_id,
+  
+    "developer_org_name": corg_name,
+  
+    "developer_org_title": corg_name,
+  
+    "domain_name": "apiconnect",
+  
+    "endpoint_url": "N/A",
+  
+    "gateway_ip": "9.46.120.78",
+  
+    "gateway_service_name": "gateway-service1",
+  
+    "host": "172.16.227.15",
+  
+    "http_user_agent": "curl/7.82.0",
+  
+    "immediate_client_ip": "9.171.17.14",
+  
+    "latency_info": [
+  
+      {
+  
+        "started": 0,
+  
+        "task": "Start"
+  
+      },
+  
+      {
+  
+        "started": 2,
+  
+        "task": "api-routing"
+  
+      },
+  
+      {
+  
+        "started": 4,
+  
+        "task": "api-cors"
+  
+      },
+  
+      {
+  
+        "started": 5,
+  
+        "task": "api-client-identification"
+  
+      },
+  
+      {
+  
+        "started": 5,
+  
+        "task": "assembly-ratelimit"
+  
+      },
+  
+      {
+  
+        "started": 6,
+  
+        "task": "api-security"
+  
+      },
+  
+      {
+  
+        "started": 6,
+  
+        "task": "assembly-function-call"
+  
+      },
+  
+      {
+  
+        "started": 6,
+  
+        "task": "api-execute"
+  
+      },
+  
+      {
+  
+        "started": 6,
+  
+        "task": "assembly-invoke"
+  
+      },
+  
+      {
+  
+        "started": 40,
+  
+        "task": "assembly-function-call"
+  
+      },
+  
+      {
+  
+        "started": 40,
+  
+        "task": "assembly-function-call"
+  
+      },
+  
+      {
+  
+        "started": 40,
+  
+        "task": "api-result"
+  
+      }
+  
+    ],
+  
+    "log_policy": "payload",
+  
+    "opentracing_info": [],
+  
+    "org_id": "065ca18c-be54-4626-aaf5-7c7912b95afe",
+  
+    "org_name": "surf-shop-1",
+  
+    "plan_id": product_name + ":1.0.0:default",
+  
+    "plan_name": "default",
+  
+    "plan_version": "1.0.0",
+  
+    "product_id": product_id,
+  
+    "product_name": product_name,
+  
+    "product_title": product_name,
+  
+    "product_version": "1.0.0",
+  
+    "query_string": "client_id=" + client_id ,
+  
+    "rateLimit": {
+  
+      product_name + "_1.0.0_default_rate-limit": {
+  
+        "period": 1,
+  
+        "count": 99,
+  
+        "limit": 100,
+  
+        "unit": "hour",
+  
+        "interval": 1,
+  
+        "reject": "false"
+  
+      }
+  
+    },
+  
+    "request_body": "",
+  
+    "request_http_headers": [
+  
+      {
+  
+        "Host": "apicdev1078.rtp.raleigh.ibm.com:9443"
+  
+      },
+  
+      {
+  
+        "User-Agent": "curl/7.82.0"
+  
+      },
+  
+      {
+  
+        "Accept": "*/*"
+  
+      }
+  
+    ],
+  
+    "request_method": "GET",
+  
+    "request_protocol": "https",
+  
+    "resource_id": "default:1.0.0:get:/clothing/tshirts",
+    
+    "response_http_headers": [
+  
+      {
+  
+        "Date": "Fri, 23 Sep 2022 19:59:48 GMT"
+  
+      },
+  
+      {
+  
+        "Content-Type": "application/json"
+  
+      },
+  
+      {
+  
+        "Content-Length": "488"
+  
+      },
+  
+      {
+  
+        "Server": "gunicorn/19.9.0"
+  
+      },
+  
+      {
+  
+        "Access-Control-Allow-Origin": "*"
+  
+      },
+  
+      {
+  
+        "Access-Control-Allow-Credentials": "true"
+  
+      },
+  
+      {
+  
+        "X-Global-Transaction-ID": "196c5565632e102a5c805bc3"
+  
+      }
+  
+    ],
+  
+    "space_id": "1b9d6bcd-bbfd-4b2d-9b5d-ab8dfbbd4bed",
+  
+    "space_name": "space_1",
+  
+    "status_code": "200 OK",
+  
+    "tags": [
+  
+      "apicapievent"
+  
+    ],
+  
+    "time_to_serve_request": 41,
+  
+    "transaction_id": "{transaction_id}",
+  
+    "uri_path": "/surf-shop/sandbox/clothing/" + api_name + "/price"
+  
+  }

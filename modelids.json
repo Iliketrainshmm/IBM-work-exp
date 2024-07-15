@@ -1,0 +1,13 @@
+[
+    "google/flan-ul2",
+    "granite-7b-lab",
+    "granite-13b-chat",
+    "granite-13b-instruct",
+    "llama-3-8b-instruct",
+    "llama-2-13b-chat",
+    "codellama-34b-instruct",
+    "mixtral-8x7b-instruct",
+    "merlinite-7b",
+    "flan-t6-xl-3b",
+    "starcoder-15.5b"
+]

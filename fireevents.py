@@ -64,7 +64,7 @@ parser.add_argument('-ca', '--numberofcalls', metavar='numbofcalls', type=int, d
 passed = parser.parse_args()
 print(passed)
 
-# Get custom config file
+# Set to custom or default config file 
 if passed.runconfig:
   configFile = passed.runconfig
 else:
@@ -107,7 +107,8 @@ ai_models = [
 ai_models_length = len(ai_models)
 config = getconfig(configFile)
 scopes = config["scopes"]
-dryrunReports = config["dryrunReports"]
+dryrunReports = bool(config["dryrunReports"])
+dryrunRequests = bool(config["dryrunRequests"])
 
 # Posts API data to Output
 def fakepost(filename, data):
@@ -117,12 +118,13 @@ def fakepost(filename, data):
 
 # Handles (potential) command line input
 debugmode = False
-""" if passed.debug is True:
+if passed.debug is True:
   debugmode = True
 else:
-  debugmode = False """
-
-dryrunRequests = bool(config["dryrunRequests"])
+  debugmode = False
+if passed.real is True and passed.input is True:
+  dryrunReports = False
+  dryrunRequests = False
 
 if not passed.input:
   ingestion_url = str(config["ingestion_URL"])

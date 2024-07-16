@@ -38,7 +38,7 @@ def getuseragents():
     json_object = json.load(openfile)
   return json_object
 
-# Important variables for generating API data
+# Important variables for generating fake API data
 methods = {
     "method":[
         "GET",
@@ -75,7 +75,7 @@ ai_models = [
 ai_models_length = len(ai_models)
 config = getconfig()
 scopes = config["scopes"]
-sendreports = config["sendreports"]
+dryrunReports = config["dryrunReports"]
 
 # Posts API data to Output
 def fakepost(filename, data):
@@ -83,12 +83,13 @@ def fakepost(filename, data):
     writer.write_all(data)
     writer.close()
 
-
+# Command line arguments
 parser.add_argument('-rc', '--runconfig',
                     help='Allows you to use a custom config', required=False)
 parser.add_argument('--debug', help='Enables debug mode',
                     required=False, type=bool, const=bool(False), nargs='?')
-# parser.add_argument('--fake', help='Fakes a post and stores the result (Will not send a request to server)',required=False,type=bool,const=bool(False),nargs='?')
+parser.add_argument('--real', help='Generates a post and sends it to server (Will delete it from folder after)',
+                    required=False,type=bool,const=bool(False),nargs='?')
 parser.add_argument('ingestionurl', metavar='ingest_url', type=str,
                     help='Ingestion url, will not be used if --runconfig is not used', const=False, nargs='?')
 parser.add_argument('numberofapis', metavar='numbofapis', type=int,
@@ -102,6 +103,7 @@ parser.add_argument('numberofcorgs', metavar='numbofcorgs', type=int,
 parser.add_argument('numberofcalls', metavar='numbofcalls', type=int,
                     help='Total number of calls to make, will not be used if --runconfig is not used', const=False, nargs='?')
 
+# Acts on (potential) input
 passed = parser.parse_args()
 debugmode = False
 if passed.debug is True:
@@ -109,7 +111,7 @@ if passed.debug is True:
 else:
   debugmode = False
 
-sendrequests = bool(config["sendrequests"])
+dryrunRequests = bool(config["dryrunRequests"])
 
 if not passed.runconfig:
   ingestion_url = str(config["ingestion_URL"])
@@ -544,7 +546,7 @@ def firereports():
         orgname=orgname, catalogname=catalogname, spacename=spacename)
     with open(str("Reports/Report"+str(x) + ".json"), "w") as outfile:
       json.dump(data, outfile, indent=2)
-    if sendreports == True:
+    if dryrunReports == False:
       infile = open("Reports/Report"+str(x)+".json")
       databuffer = infile.read()
       infile.close()
@@ -562,7 +564,7 @@ def percall(arg1):
     posts.append(createpost())
   if debugmode is True:
     print(posts)
-  if sendrequests is False:
+  if dryrunRequests is True:
     fakepost("post"+str(arg1), posts)
   else:
     fakepost("post"+str(arg1), posts)

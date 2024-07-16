@@ -27,8 +27,8 @@ if not os.path.isdir("Reports"):
     os.makedirs("Reports")
 
 # Extract from files for later
-def getconfig():
-  with open(str("config" + ".json"), "r") as openfile:
+def getconfig(configFile):
+  with open(configFile, "r") as openfile:
     json_object = json.load(openfile)
   return json_object
 
@@ -37,6 +37,38 @@ def getuseragents():
   with open(str("useragents" + ".json"), "r") as openfile:
     json_object = json.load(openfile)
   return json_object
+
+# Command line arguments
+parser.add_argument('-rc', '--runconfig', help='Allows custom config file to be used',
+                    required=False, type=str, const="None", nargs='?')
+parser.add_argument('-i', '--input', help='Allows you to input the config',
+                    required=False, type=bool, const=bool(True), nargs='?')
+parser.add_argument('--debug', help='Enables debug mode',
+                    required=False, type=bool, const=bool(True), nargs='?')
+parser.add_argument('--real', help='Generates a post and sends it to server (Will delete it from folder after)',
+                    required=False,type=bool,const=bool(True),nargs='?')
+parser.add_argument('ingestionurl', metavar='ingest_url', type=str,
+                    help='Ingestion url, will not be used if --input is not used', const=False, nargs='?')
+parser.add_argument('numberofapis', metavar='numbofapis', type=int,
+                    help='Total number of APIs (Should be equal to or more than the number of Products), will not be used if --input is not used', const=False, nargs='?')
+parser.add_argument('numberofproducts', metavar='numbofproducts', type=int,
+                    help='Total number of Products (Should be equal to or less than the number of APIs), will not be used if --input is not used', const=False, nargs='?')
+parser.add_argument('numberofapps', metavar='numbofapps', type=int,
+                    help='Total number of Apps (Should be equal to or more than the number of corgs), will not be used if --input is not used', const=False, nargs='?')
+parser.add_argument('numberofcorgs', metavar='numbofcorgs', type=int,
+                    help='Total number of corgs (Should be equal to or less than the number of Apps), will not be used if --input is not used', const=False, nargs='?')
+parser.add_argument('numberofcalls', metavar='numbofcalls', type=int,
+                    help='Total number of calls to make, will not be used if --input is not used', const=False, nargs='?')
+
+# Puts arguments in variable
+passed = parser.parse_args()
+print(passed)
+
+# Get custom config file
+if passed.runconfig:
+  configFile = passed.runconfig
+else:
+  configFile = "config.json"
 
 # Important variables for generating fake API data
 methods = {
@@ -73,7 +105,7 @@ ai_models = [
     "starcoder-15.5b"
 ]
 ai_models_length = len(ai_models)
-config = getconfig()
+config = getconfig(configFile)
 scopes = config["scopes"]
 dryrunReports = config["dryrunReports"]
 
@@ -83,44 +115,23 @@ def fakepost(filename, data):
     writer.write_all(data)
     writer.close()
 
-# Command line arguments
-parser.add_argument('-rc', '--runconfig',
-                    help='Allows you to use a custom config', required=False)
-parser.add_argument('--debug', help='Enables debug mode',
-                    required=False, type=bool, const=bool(False), nargs='?')
-parser.add_argument('--real', help='Generates a post and sends it to server (Will delete it from folder after)',
-                    required=False,type=bool,const=bool(False),nargs='?')
-parser.add_argument('ingestionurl', metavar='ingest_url', type=str,
-                    help='Ingestion url, will not be used if --runconfig is not used', const=False, nargs='?')
-parser.add_argument('numberofapis', metavar='numbofapis', type=int,
-                    help='Total number of APIs (Should be equal to or more than the number of Products), will not be used if --runconfig is not used', const=False, nargs='?')
-parser.add_argument('numberofproducts', metavar='numbofproducts', type=int,
-                    help='Total number of Products (Should be equal to or less than the number of APIs), will not be used if --runconfig is not used', const=False, nargs='?')
-parser.add_argument('numberofapps', metavar='numbofapps', type=int,
-                    help='Total number of Apps (Should be equal to or more than the number of corgs), will not be used if --runconfig is not used', const=False, nargs='?')
-parser.add_argument('numberofcorgs', metavar='numbofcorgs', type=int,
-                    help='Total number of corgs (Should be equal to or less than the number of Apps), will not be used if --runconfig is not used', const=False, nargs='?')
-parser.add_argument('numberofcalls', metavar='numbofcalls', type=int,
-                    help='Total number of calls to make, will not be used if --runconfig is not used', const=False, nargs='?')
-
-# Acts on (potential) input
-passed = parser.parse_args()
+# Handles (potential) command line input
 debugmode = False
-if passed.debug is True:
+""" if passed.debug is True:
   debugmode = True
 else:
-  debugmode = False
+  debugmode = False """
 
 dryrunRequests = bool(config["dryrunRequests"])
 
-if not passed.runconfig:
+if not passed.input:
   ingestion_url = str(config["ingestion_URL"])
   num_of_apis = int(config["number_of_apis"])
   num_of_apps = int(config["number_of_apps"])
   num_of_corgs = int(config["number_of_corgs"])
   num_of_products = int(config["number_of_products"])
   num_of_calls = int(config["number_of_calls_to_make"])
-elif passed.runconfig:
+elif passed.input:
   if passed.ingestionurl:
     ingestion_url = passed.ingestionurl
   else:
@@ -558,7 +569,7 @@ def firereports():
 def percall(arg1):
   posts = []
   for b in range(0, 100):
-    #print("Creating post data for loop {}, [{} / {}]".format(str(arg1),str(b),str(num_of_calls)))
+    # print("Creating post data for loop {}, [{} / {}]".format(str(arg1),str(b),str(num_of_calls)))
     if debugmode is True:
       print(b)
     posts.append(createpost())

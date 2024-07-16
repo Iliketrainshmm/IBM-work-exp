@@ -43,22 +43,22 @@ parser.add_argument('-rc', '--runconfig', help='Allows custom config file to be 
                     required=False, type=str, const="None", nargs='?')
 parser.add_argument('-i', '--input', help='Allows you to input the config',
                     required=False, type=bool, const=bool(True), nargs='?')
-parser.add_argument('--debug', help='Enables debug mode',
+parser.add_argument('-d', '--debug', help='Enables debug mode',
                     required=False, type=bool, const=bool(True), nargs='?')
-parser.add_argument('--real', help='Generates a post and sends it to server (Will delete it from folder after)',
+parser.add_argument('-r', '--real', help='Generates a post and sends it to server (Will delete it from folder after)',
                     required=False,type=bool,const=bool(True),nargs='?')
-parser.add_argument('ingestionurl', metavar='ingest_url', type=str,
-                    help='Ingestion url, will not be used if --input is not used', const=False, nargs='?')
-parser.add_argument('numberofapis', metavar='numbofapis', type=int,
-                    help='Total number of APIs (Should be equal to or more than the number of Products), will not be used if --input is not used', const=False, nargs='?')
-parser.add_argument('numberofproducts', metavar='numbofproducts', type=int,
-                    help='Total number of Products (Should be equal to or less than the number of APIs), will not be used if --input is not used', const=False, nargs='?')
-parser.add_argument('numberofapps', metavar='numbofapps', type=int,
-                    help='Total number of Apps (Should be equal to or more than the number of corgs), will not be used if --input is not used', const=False, nargs='?')
-parser.add_argument('numberofcorgs', metavar='numbofcorgs', type=int,
-                    help='Total number of corgs (Should be equal to or less than the number of Apps), will not be used if --input is not used', const=False, nargs='?')
-parser.add_argument('numberofcalls', metavar='numbofcalls', type=int,
-                    help='Total number of calls to make, will not be used if --input is not used', const=False, nargs='?')
+parser.add_argument('-url', '--ingestionurl', metavar='ingest_url', type=str, default="None",
+                    help='Ingestion url, will not be used if --input is not used')
+parser.add_argument('-apis', '--numberofapis', metavar='numbofapis', type=int, default="5",
+                    help='Total number of APIs (Should be equal to or more than the number of Products), will not be used if --input is not used')
+parser.add_argument('-a', '--numberofapps', metavar='numbofapps', type=int, default="5",
+                    help='--Total number of Apps (Should be equal to or more than the number of corgs), will not be used if --input is not used')
+parser.add_argument('-co', '--numberofcorgs', metavar='numbofcorgs', type=int, default="3",
+                    help='Total number of corgs (Should be equal to or less than the number of Apps), will not be used if --input is not used')
+parser.add_argument('-p', '--numberofproducts', metavar='numbofproducts', type=int, default="3",
+                    help='Total number of Products (Should be equal to or less than the number of APIs), will not be used if --input is not used')
+parser.add_argument('-ca', '--numberofcalls', metavar='numbofcalls', type=int, default="10",
+                    help='Total number of calls to make, will not be used if --input is not used')
 
 # Puts arguments in variable
 passed = parser.parse_args()

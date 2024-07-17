@@ -1,4 +1,4 @@
-# Libraries
+# Libraries and pointers
 from wonderwords import RandomWord
 import json
 import uuid
@@ -14,6 +14,7 @@ import time
 import os
 import math
 from colorama import Fore
+import sys
 faker = Faker()
 parser = argparse.ArgumentParser(description="API call faker")
 r = RandomWord()
@@ -106,7 +107,6 @@ parser.add_argument('-f', '--numberofcalls', metavar='numbofcalls', type=int, re
 
 # Puts arguments in variable
 passed = parser.parse_args()
-print(passed)
 
 # Posts API data to Output
 def fakepost(filename, data):
@@ -122,10 +122,12 @@ if config != None:
   num_of_products = int(config["number_of_products"])
   num_of_calls = int(config["number_of_calls_to_make"])
 
+# Defined for error if no input
+ingestion_url = None
+
 # Other config info, without parser defaults
 if config == None:
   percent_ai_calls = 0.1
-  ingestion_url = "https://ai.cdm0701.supergirl.dev.ciondemand.com"
   scopes = [
     {
       "id": "dcef2f41-770e-4bbd-abc4-4adbf510b99f/113b4724-1ef8-4a4a-8295-3555862cd127",
@@ -156,6 +158,10 @@ else:
   dryrunReports = False
   dryrunRequests = False
 
+# Prints out command line arguments for debugging
+if debugmode == True:
+  print(passed)
+
 # Input data always overrides config file
 if passed.ingestionurl:
   ingestion_url = passed.ingestionurl
@@ -170,6 +176,11 @@ if passed.numberofproducts:
 if passed.numberofcalls:
   num_of_calls = passed.numberofcalls
 
+# Abort with error if no ingestion URL in config or arguments
+if ingestion_url == None:
+  sys.exit("Error: no ingestion URL found. Please provide an ingestion URL in a config file or as a command line argument.")
+
+# Sorts out scopes
 if scopes:
   scopes_exist = True
   amount_of_scopes = len(scopes)

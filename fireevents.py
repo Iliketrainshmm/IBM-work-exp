@@ -230,7 +230,7 @@ if debugmode is True:
 
 ipaddress = {}
 
-for c in range(1, 150):
+for c in range(0, 149):
   ipaddress[c] = faker.ipv4_public()
 
 if debugmode is True:
@@ -308,7 +308,7 @@ def createpost():
   if debugmode is True:
     print(randomtimedate)
 
-  clientrandomip = ipaddress[random.randint(1, 150)]
+  clientrandomip = ipaddress[random.randint(0, 149)]
 
   product_num = int(int(random.randint(0, num_of_products))-1)
   if product_num == -1:

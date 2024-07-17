@@ -159,28 +159,16 @@ else:
 # Input data always overrides config file
 if passed.ingestionurl:
   ingestion_url = passed.ingestionurl
-else:
-  ingestion_url = str(config["ingestion_URL"])
 if passed.numberofapis:
   num_of_apis = passed.numberofapis
-else:
-  num_of_apis = int(config["number_of_apis"])
 if passed.numberofapps:
   num_of_apps = passed.numberofapps
-else:
-  num_of_apps = int(config["number_of_apps"])
 if passed.numberofcorgs:
   num_of_corgs = passed.numberofcorgs
-else:
-  num_of_corgs = int(config["number_of_corgs"])
 if passed.numberofproducts:
   num_of_products = passed.numberofproducts
-else:
-  num_of_products = int(config["number_of_products"])
 if passed.numberofcalls:
   num_of_calls = passed.numberofcalls
-else:
-  num_of_calls = int(config["number_of_calls_to_make"])
 
 if scopes:
   scopes_exist = True
@@ -294,8 +282,8 @@ weightslength = len(weights)
 def createpost():
   if scopes_exist is True:
     randomscope = random.randint(0, int(amount_of_scopes-1))
-    idscope = str(config["scopes"][randomscope]["id"])
-    namescope = str(config["scopes"][randomscope]["name"])
+    idscope = str(scopes[randomscope]["id"])
+    namescope = str(scopes[randomscope]["name"])
     if len(idscope.split("/")) == 2:
       org_id = str(idscope.split("/")[0])
       catalog_id = str(idscope.split("/")[1])

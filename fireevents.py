@@ -114,19 +114,6 @@ def fakepost(filename, data):
     writer.write_all(data)
     writer.close()
 
-# Handles (potential) command line input (debug and dryrun functions)
-debugmode = False
-if passed.debug is True:
-  debugmode = True
-else:
-  debugmode = False
-if passed.dryrun is True:
-  dryrunReports = True
-  dryrunRequests = True
-else:
-  dryrunReports = False
-  dryrunRequests = False
-
 # Uses provided/default config if it exists
 if config != None:
   num_of_apis = int(config["number_of_apis"])
@@ -139,12 +126,6 @@ if config != None:
 if config == None:
   percent_ai_calls = 0.1
   ingestion_url = "https://ai.cdm0701.supergirl.dev.ciondemand.com"
-  scopes = config["scopes"]
-  dryrunReports = bool(config["dryrunReports"])
-  dryrunRequests = bool(config["dryrunRequests"])
-else:
-  percent_ai_calls = float(config["percent_ai_requests"])
-  ingestion_url = str(config["ingestion_URL"])
   scopes = [
     {
       "id": "dcef2f41-770e-4bbd-abc4-4adbf510b99f/113b4724-1ef8-4a4a-8295-3555862cd127",
@@ -155,8 +136,25 @@ else:
       "name": "ibm/api-connect-catalog-1"
     }
   ]
+else:
+  percent_ai_calls = float(config["percent_ai_requests"])
+  ingestion_url = str(config["ingestion_URL"])
+  scopes = config["scopes"]
+  dryrunReports = bool(config["dryrunReports"])
+  dryrunRequests = bool(config["dryrunRequests"])
+
+# Handles (potential) command line input (debug and dryrun functions)
+debugmode = False
+if passed.debug is True:
+  debugmode = True
+else:
+  debugmode = False
+if passed.dryrun is True:
   dryrunReports = True
   dryrunRequests = True
+else:
+  dryrunReports = False
+  dryrunRequests = False
 
 # Input data always overrides config file
 if passed.ingestionurl:
@@ -250,7 +248,7 @@ if debugmode is True:
 
 ipaddress = {}
 
-for c in range(0, 149):
+for c in range(0, 150):
   ipaddress[c] = faker.ipv4_public()
 
 if debugmode is True:

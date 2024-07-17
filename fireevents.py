@@ -49,6 +49,15 @@ def configPresent(default):
   else:
     return None
 
+# Deals with different scenarios for loop number specific to pablo mode
+def pabloLoops():
+  if pablo == True:
+    return 30
+  elif config != None:
+    return int(config["number_of_loops_to_make"])
+  else:
+    return 10
+
 # Important variables to use later for generating fake API data
 # Config in
 methods = {
@@ -92,6 +101,8 @@ parser.add_argument('-d', '--debug', help='Enables debug mode',
                     required=False, type=bool, const=True, nargs='?')
 parser.add_argument('-e', '--dryrun', help='Generates a post and sends it to server (Will delete it from folder after)',
                     required=False,type=bool, const=True, nargs='?')
+parser.add_argument('-p', '--pablo', help='Executes serially from 30 days ago to now (1000 calls per day at random times) with 30 post output files',
+                    required=False,type=bool, const=True, nargs='?')
 parser.add_argument('-u', '--ingestionurl', metavar='ingest_url', type=str, required=False, nargs='?',
                     help='Ingestion url to fake/make calls')
 parser.add_argument('-a', '--numberofapis', metavar='numbofapis', type=int, required=False, nargs='?', default=configPresent(5),
@@ -100,10 +111,8 @@ parser.add_argument('-b', '--numberofapps', metavar='numbofapps', type=int, requ
                     help='--Total number of Apps (Should be equal to or more than the number of corgs)')
 parser.add_argument('-c', '--numberofcorgs', metavar='numbofcorgs', type=int, required=False, nargs='?', default=configPresent(3),
                     help='Total number of corgs (Should be equal to or less than the number of Apps)')
-parser.add_argument('-p', '--numberofproducts', metavar='numbofproducts', type=int, required=False, nargs='?', default=configPresent(3),
+parser.add_argument('-q', '--numberofproducts', metavar='numbofproducts', type=int, required=False, nargs='?', default=configPresent(3),
                     help='Total number of Products (Should be equal to or less than the number of APIs)')
-parser.add_argument('-f', '--numberofcalls', metavar='numbofcalls', type=int, required=False, nargs='?', default=configPresent(10),
-                    help='Total number of calls to make')
 
 # Puts arguments in variable
 passed = parser.parse_args()
@@ -120,7 +129,6 @@ if config != None:
   num_of_apps = int(config["number_of_apps"])
   num_of_corgs = int(config["number_of_corgs"])
   num_of_products = int(config["number_of_products"])
-  num_of_calls = int(config["number_of_calls_to_make"])
 
 # Defined for error if no input
 ingestion_url = None
@@ -145,8 +153,7 @@ else:
   dryrunReports = bool(config["dryrunReports"])
   dryrunRequests = bool(config["dryrunRequests"])
 
-# Handles (potential) command line input (debug and dryrun functions)
-debugmode = False
+# Handles (potential) command line input (debug, dryrun, and pablo functions)
 if passed.debug is True:
   debugmode = True
 else:
@@ -157,6 +164,17 @@ if passed.dryrun is True:
 else:
   dryrunReports = False
   dryrunRequests = False
+if passed.pablo is True:
+  pablo = True
+else:
+  pablo = False
+
+# Command line argument for number of loops (here because pablo)
+parser.add_argument('-l', '--numberofloops', metavar='numbofloops', type=int, required=False, nargs='?', default=pabloLoops(),
+                    help='Total number of loops to make')
+
+# Puts arguments in variable (again - probably unoptimised but who cares)
+passed = parser.parse_args()
 
 # Prints out command line arguments for debugging
 if debugmode == True:
@@ -173,8 +191,8 @@ if passed.numberofcorgs:
   num_of_corgs = passed.numberofcorgs
 if passed.numberofproducts:
   num_of_products = passed.numberofproducts
-if passed.numberofcalls:
-  num_of_calls = passed.numberofcalls
+if passed.numberofloops:
+  num_of_loops = passed.numberofloops
 
 # Abort with error if no ingestion URL in config or arguments
 if ingestion_url == None:
@@ -602,12 +620,15 @@ def percall(arg1):
     os.remove("Output/post"+str(arg1)+".txt")
     print("Sent post {}".format(str(arg1)))
 
-
-with concurrent.futures.ThreadPoolExecutor(max_workers=7) as executor:
-  for i in range(0, num_of_calls):
-    future = executor.submit(percall, i)
-result = future.result()
-print(Fore.GREEN+"Posted "+Fore.RESET+str(num_of_calls)+Fore.GREEN+" of "+Fore.RESET+str(num_of_calls)+Fore.GREEN+" posts"+Fore.RESET)
+if pablo == False:
+  with concurrent.futures.ThreadPoolExecutor(max_workers=7) as executor:
+    for i in range(0, num_of_loops):
+      future = executor.submit(percall, i)
+  result = future.result()
+else:
+  for i in range(0, num_of_loops):
+      percall(i)
+print(Fore.GREEN+"Posted "+Fore.RESET+str(num_of_loops)+Fore.GREEN+" of "+Fore.RESET+str(num_of_loops)+Fore.GREEN+" posts"+Fore.RESET)
 
 print("Starting reports")
 firereports()

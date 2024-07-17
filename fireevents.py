@@ -27,8 +27,8 @@ if not os.path.isdir("Reports"):
     os.makedirs("Reports")
 
 # Extract from files for later
-def getconfig(configFile):
-  with open(configFile, "r") as openfile:
+def getconfig():
+  with open("config.json", "r") as openfile:
     json_object = json.load(openfile)
   return json_object
 
@@ -39,36 +39,26 @@ def getuseragents():
   return json_object
 
 # Command line arguments
-parser.add_argument('-rc', '--runconfig', help='Allows custom config file to be used',
-                    required=False, type=str, const="None", nargs='?')
-parser.add_argument('-i', '--input', help='Allows you to input the config',
-                    required=False, type=bool, const=bool(True), nargs='?')
 parser.add_argument('-d', '--debug', help='Enables debug mode',
-                    required=False, type=bool, const=bool(True), nargs='?')
-parser.add_argument('-r', '--real', help='Generates a post and sends it to server (Will delete it from folder after)',
-                    required=False,type=bool,const=bool(True),nargs='?')
-parser.add_argument('-url', '--ingestionurl', metavar='ingest_url', type=str, default="None",
+                    required=False, type=bool, const=True, nargs='?')
+parser.add_argument('-e', '--dryrun', help='Generates a post and sends it to server (Will delete it from folder after)',
+                    required=False,type=bool, const=True, nargs='?')
+parser.add_argument('-u', '--ingestionurl', metavar='ingest_url', type=str, required=False, nargs='?',
                     help='Ingestion url, will not be used if --input is not used')
-parser.add_argument('-apis', '--numberofapis', metavar='numbofapis', type=int, default="5",
+parser.add_argument('-a', '--numberofapis', metavar='numbofapis', type=int, required=False, nargs='?',
                     help='Total number of APIs (Should be equal to or more than the number of Products), will not be used if --input is not used')
-parser.add_argument('-a', '--numberofapps', metavar='numbofapps', type=int, default="5",
+parser.add_argument('-b', '--numberofapps', metavar='numbofapps', type=int, required=False, nargs='?',
                     help='--Total number of Apps (Should be equal to or more than the number of corgs), will not be used if --input is not used')
-parser.add_argument('-co', '--numberofcorgs', metavar='numbofcorgs', type=int, default="3",
+parser.add_argument('-c', '--numberofcorgs', metavar='numbofcorgs', type=int, required=False, nargs='?',
                     help='Total number of corgs (Should be equal to or less than the number of Apps), will not be used if --input is not used')
-parser.add_argument('-p', '--numberofproducts', metavar='numbofproducts', type=int, default="3",
+parser.add_argument('-p', '--numberofproducts', metavar='numbofproducts', type=int, required=False, nargs='?',
                     help='Total number of Products (Should be equal to or less than the number of APIs), will not be used if --input is not used')
-parser.add_argument('-ca', '--numberofcalls', metavar='numbofcalls', type=int, default="10",
+parser.add_argument('-f', '--numberofcalls', metavar='numbofcalls', type=int, required=False, nargs='?',
                     help='Total number of calls to make, will not be used if --input is not used')
 
 # Puts arguments in variable
 passed = parser.parse_args()
 print(passed)
-
-# Set to custom or default config file 
-if passed.runconfig:
-  configFile = passed.runconfig
-else:
-  configFile = "config.json"
 
 # Important variables for generating fake API data
 methods = {
@@ -105,7 +95,7 @@ ai_models = [
     "starcoder-15.5b"
 ]
 ai_models_length = len(ai_models)
-config = getconfig(configFile)
+config = getconfig()
 scopes = config["scopes"]
 dryrunReports = bool(config["dryrunReports"])
 dryrunRequests = bool(config["dryrunRequests"])
@@ -116,16 +106,18 @@ def fakepost(filename, data):
     writer.write_all(data)
     writer.close()
 
-# Handles (potential) command line input
+# Handles (potential) command line input (debug and real functions)
 debugmode = False
 if passed.debug is True:
   debugmode = True
 else:
   debugmode = False
-if passed.real is True and passed.input is True:
+if passed.real is True:
   dryrunReports = False
   dryrunRequests = False
 
+# Uses provided/default config if not provided input
+# Assigns variable if provided input
 if not passed.input:
   ingestion_url = str(config["ingestion_URL"])
   num_of_apis = int(config["number_of_apis"])
@@ -225,7 +217,7 @@ if debugmode is True:
 
 ipaddress = {}
 
-for c in range(1, 150):
+for c in range(0, 149):
   ipaddress[c] = faker.ipv4_public()
 
 if debugmode is True:
@@ -233,9 +225,7 @@ if debugmode is True:
 
 useragents = getuseragents()
 
-# currenttime = datetime.datetime.now(datetime.UTC).isoformat()
-# 27 days ago in epoch is 2332800
-# 30 days ago in epoch is 2592000
+# Sets up time parameters
 currenttimeepoch = int(time.time())
 oldtime = currenttimeepoch-2592000
 
@@ -305,7 +295,7 @@ def createpost():
   if debugmode is True:
     print(randomtimedate)
 
-  clientrandomip = ipaddress[random.randint(1, 149)]
+  clientrandomip = ipaddress[random.randint(0, 149)]
 
   product_num = int(int(random.randint(0, num_of_products))-1)
   if product_num == -1:

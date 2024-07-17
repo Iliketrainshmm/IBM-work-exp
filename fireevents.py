@@ -26,39 +26,27 @@ if not os.path.isdir("Output"):
 if not os.path.isdir("Reports"):
     os.makedirs("Reports")
 
-# Extract from files for later
+# Extract config and users from files for later
 def getconfig():
-  with open("config.json", "r") as openfile:
-    json_object = json.load(openfile)
-  return json_object
+  try:
+    with open("config.json", "r") as openfile:
+      json_object = json.load(openfile)
+    return json_object
+  except:
+    return None
 
 
 def getuseragents():
-  with open(str("useragents" + ".json"), "r") as openfile:
+  with open(str("useragents.json"), "r") as openfile:
     json_object = json.load(openfile)
   return json_object
 
-# Command line arguments
-parser.add_argument('-d', '--debug', help='Enables debug mode',
-                    required=False, type=bool, const=True, nargs='?')
-parser.add_argument('-e', '--dryrun', help='Generates a post and sends it to server (Will delete it from folder after)',
-                    required=False,type=bool, const=True, nargs='?')
-parser.add_argument('-u', '--ingestionurl', metavar='ingest_url', type=str, required=False, nargs='?',
-                    help='Ingestion url, will not be used if --input is not used')
-parser.add_argument('-a', '--numberofapis', metavar='numbofapis', type=int, required=False, nargs='?', default=5,
-                    help='Total number of APIs (Should be equal to or more than the number of Products), will not be used if --input is not used')
-parser.add_argument('-b', '--numberofapps', metavar='numbofapps', type=int, required=False, nargs='?', default=5,
-                    help='--Total number of Apps (Should be equal to or more than the number of corgs), will not be used if --input is not used')
-parser.add_argument('-c', '--numberofcorgs', metavar='numbofcorgs', type=int, required=False, nargs='?', default=3,
-                    help='Total number of corgs (Should be equal to or less than the number of Apps), will not be used if --input is not used')
-parser.add_argument('-p', '--numberofproducts', metavar='numbofproducts', type=int, required=False, nargs='?', default=3,
-                    help='Total number of Products (Should be equal to or less than the number of APIs), will not be used if --input is not used')
-parser.add_argument('-f', '--numberofcalls', metavar='numbofcalls', type=int, required=False, nargs='?', default=10,
-                    help='Total number of calls to make, will not be used if --input is not used')
-
-# Puts arguments in variable
-passed = parser.parse_args()
-print(passed)
+# Returns default only if no config file to replace 
+def configPresent(default):
+  if config == None:
+    return default
+  else:
+    return None
 
 # Important variables for generating fake API data
 methods = {
@@ -100,6 +88,28 @@ scopes = config["scopes"]
 dryrunReports = bool(config["dryrunReports"])
 dryrunRequests = bool(config["dryrunRequests"])
 
+# Command line arguments
+parser.add_argument('-d', '--debug', help='Enables debug mode',
+                    required=False, type=bool, const=True, nargs='?')
+parser.add_argument('-e', '--dryrun', help='Generates a post and sends it to server (Will delete it from folder after)',
+                    required=False,type=bool, const=True, nargs='?')
+parser.add_argument('-u', '--ingestionurl', metavar='ingest_url', type=str, required=False, nargs='?',
+                    help='Ingestion url to fake/make calls')
+parser.add_argument('-a', '--numberofapis', metavar='numbofapis', type=int, required=False, nargs='?', default=configPresent(5),
+                    help='Total number of APIs (Should be equal to or more than the number of Products)')
+parser.add_argument('-b', '--numberofapps', metavar='numbofapps', type=int, required=False, nargs='?', default=configPresent(5),
+                    help='--Total number of Apps (Should be equal to or more than the number of corgs)')
+parser.add_argument('-c', '--numberofcorgs', metavar='numbofcorgs', type=int, required=False, nargs='?', default=configPresent(3),
+                    help='Total number of corgs (Should be equal to or less than the number of Apps)')
+parser.add_argument('-p', '--numberofproducts', metavar='numbofproducts', type=int, required=False, nargs='?', default=configPresent(3),
+                    help='Total number of Products (Should be equal to or less than the number of APIs)')
+parser.add_argument('-f', '--numberofcalls', metavar='numbofcalls', type=int, required=False, nargs='?', default=configPresent(10),
+                    help='Total number of calls to make')
+
+# Puts arguments in variable
+passed = parser.parse_args()
+print(passed)
+
 # Posts API data to Output
 def fakepost(filename, data):
   with jsonlines.open(str("Output/"+filename + ".txt"), mode="w") as writer:
@@ -119,40 +129,40 @@ else:
   dryrunReports = False
   dryrunRequests = False
 
-# Uses provided/default config if not provided input
-# Assigns variable if provided input
-if not passed.input:
+# Uses provided/default config if it exists
+if config != None:
   ingestion_url = str(config["ingestion_URL"])
   num_of_apis = int(config["number_of_apis"])
   num_of_apps = int(config["number_of_apps"])
   num_of_corgs = int(config["number_of_corgs"])
   num_of_products = int(config["number_of_products"])
   num_of_calls = int(config["number_of_calls_to_make"])
-elif passed.input:
-  if passed.ingestionurl:
-    ingestion_url = passed.ingestionurl
-  else:
-    ingestion_url = str(config["ingestion_URL"])
-  if passed.numberofapis:
-    num_of_apis = passed.numberofapis
-  else:
-    num_of_apis = int(config["number_of_apis"])
-  if passed.numberofapps:
-    num_of_apps = passed.numberofapps
-  else:
-    num_of_apps = int(config["number_of_apps"])
-  if passed.numberofcorgs:
-    num_of_corgs = passed.numberofcorgs
-  else:
-    num_of_corgs = int(config["number_of_corgs"])
-  if passed.numberofproducts:
-    num_of_products = passed.numberofproducts
-  else:
-    num_of_products = int(config["number_of_products"])
-  if passed.numberofcalls:
-    num_of_calls = passed.numberofcalls
-  else:
-    num_of_calls = int(config["number_of_calls_to_make"])
+
+# Input data always overrides config file
+if passed.ingestionurl:
+  ingestion_url = passed.ingestionurl
+else:
+  ingestion_url = str(config["ingestion_URL"])
+if passed.numberofapis:
+  num_of_apis = passed.numberofapis
+else:
+  num_of_apis = int(config["number_of_apis"])
+if passed.numberofapps:
+  num_of_apps = passed.numberofapps
+else:
+  num_of_apps = int(config["number_of_apps"])
+if passed.numberofcorgs:
+  num_of_corgs = passed.numberofcorgs
+else:
+  num_of_corgs = int(config["number_of_corgs"])
+if passed.numberofproducts:
+  num_of_products = passed.numberofproducts
+else:
+  num_of_products = int(config["number_of_products"])
+if passed.numberofcalls:
+  num_of_calls = passed.numberofcalls
+else:
+  num_of_calls = int(config["number_of_calls_to_make"])
 
 if config["scopes"]:
   scopes_exist = True

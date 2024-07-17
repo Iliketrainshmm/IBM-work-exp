@@ -48,7 +48,8 @@ def configPresent(default):
   else:
     return None
 
-# Important variables for generating fake API data
+# Important variables to use later for generating fake API data
+# Config in
 methods = {
     "method":[
         "GET",
@@ -84,9 +85,6 @@ ai_models = [
 ]
 ai_models_length = len(ai_models)
 config = getconfig()
-scopes = config["scopes"]
-dryrunReports = bool(config["dryrunReports"])
-dryrunRequests = bool(config["dryrunRequests"])
 
 # Command line arguments
 parser.add_argument('-d', '--debug', help='Enables debug mode',
@@ -131,12 +129,34 @@ else:
 
 # Uses provided/default config if it exists
 if config != None:
-  ingestion_url = str(config["ingestion_URL"])
   num_of_apis = int(config["number_of_apis"])
   num_of_apps = int(config["number_of_apps"])
   num_of_corgs = int(config["number_of_corgs"])
   num_of_products = int(config["number_of_products"])
   num_of_calls = int(config["number_of_calls_to_make"])
+
+# Other config info, without parser defaults
+if config == None:
+  percent_ai_calls = 0.1
+  ingestion_url = "https://ai.cdm0701.supergirl.dev.ciondemand.com"
+  scopes = config["scopes"]
+  dryrunReports = bool(config["dryrunReports"])
+  dryrunRequests = bool(config["dryrunRequests"])
+else:
+  percent_ai_calls = float(config["percent_ai_requests"])
+  ingestion_url = str(config["ingestion_URL"])
+  scopes = [
+    {
+      "id": "dcef2f41-770e-4bbd-abc4-4adbf510b99f/113b4724-1ef8-4a4a-8295-3555862cd127",
+      "name": "ibm/sandbox"
+    },
+    {
+      "id": "dcef2f41-770e-4bbd-abc4-4adbf510b99f/3140821c-c2fe-4f09-a0e1-dd2a9e14c381",
+      "name": "ibm/api-connect-catalog-1"
+    }
+  ]
+  dryrunReports = True
+  dryrunRequests = True
 
 # Input data always overrides config file
 if passed.ingestionurl:
@@ -164,9 +184,9 @@ if passed.numberofcalls:
 else:
   num_of_calls = int(config["number_of_calls_to_make"])
 
-if config["scopes"]:
+if scopes:
   scopes_exist = True
-  amount_of_scopes = len(config["scopes"])
+  amount_of_scopes = len(scopes)
 else:
   scopes_exist = False
 
@@ -272,9 +292,6 @@ statcodes = codedata["codes"]
 statcodeslength = len(statcodes)
 weights = codedata["weights"]
 weightslength = len(weights)
-
-percent_ai_calls = float(config["percent_ai_requests"])
-
 
 def createpost():
   if scopes_exist is True:

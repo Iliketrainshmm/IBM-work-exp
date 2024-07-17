@@ -45,15 +45,15 @@ parser.add_argument('-e', '--dryrun', help='Generates a post and sends it to ser
                     required=False,type=bool, const=True, nargs='?')
 parser.add_argument('-u', '--ingestionurl', metavar='ingest_url', type=str, required=False, nargs='?',
                     help='Ingestion url, will not be used if --input is not used')
-parser.add_argument('-a', '--numberofapis', metavar='numbofapis', type=int, required=False, nargs='?',
+parser.add_argument('-a', '--numberofapis', metavar='numbofapis', type=int, required=False, nargs='?', default=5,
                     help='Total number of APIs (Should be equal to or more than the number of Products), will not be used if --input is not used')
-parser.add_argument('-b', '--numberofapps', metavar='numbofapps', type=int, required=False, nargs='?',
+parser.add_argument('-b', '--numberofapps', metavar='numbofapps', type=int, required=False, nargs='?', default=5,
                     help='--Total number of Apps (Should be equal to or more than the number of corgs), will not be used if --input is not used')
-parser.add_argument('-c', '--numberofcorgs', metavar='numbofcorgs', type=int, required=False, nargs='?',
+parser.add_argument('-c', '--numberofcorgs', metavar='numbofcorgs', type=int, required=False, nargs='?', default=3,
                     help='Total number of corgs (Should be equal to or less than the number of Apps), will not be used if --input is not used')
-parser.add_argument('-p', '--numberofproducts', metavar='numbofproducts', type=int, required=False, nargs='?',
+parser.add_argument('-p', '--numberofproducts', metavar='numbofproducts', type=int, required=False, nargs='?', default=3,
                     help='Total number of Products (Should be equal to or less than the number of APIs), will not be used if --input is not used')
-parser.add_argument('-f', '--numberofcalls', metavar='numbofcalls', type=int, required=False, nargs='?',
+parser.add_argument('-f', '--numberofcalls', metavar='numbofcalls', type=int, required=False, nargs='?', default=10,
                     help='Total number of calls to make, will not be used if --input is not used')
 
 # Puts arguments in variable
@@ -106,13 +106,16 @@ def fakepost(filename, data):
     writer.write_all(data)
     writer.close()
 
-# Handles (potential) command line input (debug and real functions)
+# Handles (potential) command line input (debug and dryrun functions)
 debugmode = False
 if passed.debug is True:
   debugmode = True
 else:
   debugmode = False
-if passed.real is True:
+if passed.dryrun is True:
+  dryrunReports = True
+  dryrunRequests = True
+else:
   dryrunReports = False
   dryrunRequests = False
 
@@ -217,7 +220,7 @@ if debugmode is True:
 
 ipaddress = {}
 
-for c in range(0, 149):
+for c in range(1, 150):
   ipaddress[c] = faker.ipv4_public()
 
 if debugmode is True:
@@ -295,7 +298,7 @@ def createpost():
   if debugmode is True:
     print(randomtimedate)
 
-  clientrandomip = ipaddress[random.randint(0, 149)]
+  clientrandomip = ipaddress[random.randint(1, 150)]
 
   product_num = int(int(random.randint(0, num_of_products))-1)
   if product_num == -1:

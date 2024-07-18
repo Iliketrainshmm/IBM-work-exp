@@ -15,6 +15,7 @@ import os
 import math
 from colorama import Fore
 import sys
+import time
 faker = Faker()
 parser = argparse.ArgumentParser(description="API call faker")
 r = RandomWord()
@@ -36,7 +37,6 @@ def getconfig():
   except:
     return None
 
-
 def getuseragents():
   with open(str("useragents.json"), "r") as openfile:
     json_object = json.load(openfile)
@@ -49,14 +49,13 @@ def configPresent(default):
   else:
     return None
 
-# Deals with different scenarios for loop number specific to multiindex mode
+# Deals with different scenarios for loop number (and other things) specific to multiindex mode (and generally)
 def multiindexLoops():
   if multiindex == True:
-    return 30
+    num_of_events = 1000
+    num_of_loops = 30
   elif config != None:
-    return int(config["number_of_loops_to_make"])
-  else:
-    return 10
+    num_of_loops = int(config["number_of_loops_to_make"])
 
 # Important variables to use later for generating fake API data
 # Config in
@@ -95,13 +94,15 @@ ai_models = [
 ]
 ai_models_length = len(ai_models)
 config = getconfig()
+num_of_events = 100
+num_of_loops = 10
 
 # Command line arguments
 parser.add_argument('-d', '--debug', help='Enables debug mode',
                     required=False, type=bool, const=True, nargs='?')
 parser.add_argument('-e', '--dryrun', help='Generates a post and sends it to server (Will delete it from folder after)',
                     required=False,type=bool, const=True, nargs='?')
-parser.add_argument('-p', '--multiindex', help='Executes serially from 30 days ago to now (1000 calls per day at random times) with 30 post output files',
+parser.add_argument('-m', '--multiindex', help='Executes serially from 30 days ago to now (1000 calls per day at random times) with 30 post output files',
                     required=False,type=bool, const=True, nargs='?')
 parser.add_argument('-u', '--ingestionurl', metavar='ingest_url', type=str, required=False, nargs='?',
                     help='Ingestion url to fake/make calls')
@@ -166,11 +167,12 @@ else:
   dryrunRequests = False
 if passed.multiindex is True:
   multiindex = True
+  multiindexLoops()
 else:
   multiindex = False
 
 # Command line argument for number of loops (here because multiindex)
-parser.add_argument('-l', '--numberofloops', metavar='numbofloops', type=int, required=False, nargs='?', default=multiindexLoops(),
+parser.add_argument('-l', '--numberofloops', metavar='numbofloops', type=int, required=False, nargs='?', default=num_of_loops,
                     help='Total number of loops to make')
 
 # Puts arguments in variable (again - probably unoptimised but who cares)
@@ -275,7 +277,10 @@ useragents = getuseragents()
 
 # Sets up time parameters
 currenttimeepoch = int(time.time())
-oldtime = currenttimeepoch-2592000
+if multiindex == False:
+  oldtime = currenttimeepoch-2592000
+else:
+  oldtime = currenttimeepoch - (num_of_loops * 24 * 3600)
 
 codedata = {
     "codes": [
@@ -334,6 +339,7 @@ def createpost():
     statcode = random.choices(statcodes, weights=weights, k=1)[0]
   else:
     statcode = "200 OK"
+
 
   randomtime = random.randint(oldtime, currenttimeepoch)
   randomtimedate = datetime.datetime.fromtimestamp(randomtime).isoformat()
@@ -605,7 +611,7 @@ def firereports():
 
 def percall(arg1):
   posts = []
-  for b in range(0, 100):
+  for b in range(0, num_of_events):
     # print("Creating post data for loop {}, [{} / {}]".format(str(arg1),str(b),str(num_of_calls)))
     if debugmode is True:
       print(b)
@@ -628,6 +634,7 @@ if multiindex == False:
 else:
   for i in range(0, num_of_loops):
       percall(i)
+      # time.sleep(1)
 print(Fore.GREEN+"Posted "+Fore.RESET+str(num_of_loops)+Fore.GREEN+" of "+Fore.RESET+str(num_of_loops)+Fore.GREEN+" posts"+Fore.RESET)
 
 print("Starting reports")

@@ -49,9 +49,9 @@ def configPresent(default):
   else:
     return None
 
-# Deals with different scenarios for loop number specific to pablo mode
-def pabloLoops():
-  if pablo == True:
+# Deals with different scenarios for loop number specific to multiindex mode
+def multiindexLoops():
+  if multiindex == True:
     return 30
   elif config != None:
     return int(config["number_of_loops_to_make"])
@@ -101,7 +101,7 @@ parser.add_argument('-d', '--debug', help='Enables debug mode',
                     required=False, type=bool, const=True, nargs='?')
 parser.add_argument('-e', '--dryrun', help='Generates a post and sends it to server (Will delete it from folder after)',
                     required=False,type=bool, const=True, nargs='?')
-parser.add_argument('-p', '--pablo', help='Executes serially from 30 days ago to now (1000 calls per day at random times) with 30 post output files',
+parser.add_argument('-p', '--multiindex', help='Executes serially from 30 days ago to now (1000 calls per day at random times) with 30 post output files',
                     required=False,type=bool, const=True, nargs='?')
 parser.add_argument('-u', '--ingestionurl', metavar='ingest_url', type=str, required=False, nargs='?',
                     help='Ingestion url to fake/make calls')
@@ -153,7 +153,7 @@ else:
   dryrunReports = bool(config["dryrunReports"])
   dryrunRequests = bool(config["dryrunRequests"])
 
-# Handles (potential) command line input (debug, dryrun, and pablo functions)
+# Handles (potential) command line input (debug, dryrun, and multiindex functions)
 if passed.debug is True:
   debugmode = True
 else:
@@ -164,13 +164,13 @@ if passed.dryrun is True:
 else:
   dryrunReports = False
   dryrunRequests = False
-if passed.pablo is True:
-  pablo = True
+if passed.multiindex is True:
+  multiindex = True
 else:
-  pablo = False
+  multiindex = False
 
-# Command line argument for number of loops (here because pablo)
-parser.add_argument('-l', '--numberofloops', metavar='numbofloops', type=int, required=False, nargs='?', default=pabloLoops(),
+# Command line argument for number of loops (here because multiindex)
+parser.add_argument('-l', '--numberofloops', metavar='numbofloops', type=int, required=False, nargs='?', default=multiindexLoops(),
                     help='Total number of loops to make')
 
 # Puts arguments in variable (again - probably unoptimised but who cares)
@@ -620,7 +620,7 @@ def percall(arg1):
     os.remove("Output/post"+str(arg1)+".txt")
     print("Sent post {}".format(str(arg1)))
 
-if pablo == False:
+if multiindex == False:
   with concurrent.futures.ThreadPoolExecutor(max_workers=7) as executor:
     for i in range(0, num_of_loops):
       future = executor.submit(percall, i)

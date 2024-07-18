@@ -51,7 +51,9 @@ def configPresent(default):
 
 # Deals with different scenarios for loop number (and other things) specific to multiindex mode (and generally)
 def multiindexLoops():
+  global num_of_loops
   if multiindex == True:
+    global num_of_events
     num_of_events = 1000
     num_of_loops = 30
   elif config != None:
@@ -281,6 +283,7 @@ if multiindex == False:
   oldtime = currenttimeepoch-2592000
 else:
   oldtime = currenttimeepoch - (num_of_loops * 24 * 3600)
+  newtime = oldtime + (24 * 3600)
 
 codedata = {
     "codes": [
@@ -313,7 +316,7 @@ statcodeslength = len(statcodes)
 weights = codedata["weights"]
 weightslength = len(weights)
 
-def createpost():
+def createpost(newtime, oldtime):
   if scopes_exist is True:
     randomscope = random.randint(0, int(amount_of_scopes-1))
     idscope = str(scopes[randomscope]["id"])
@@ -340,11 +343,16 @@ def createpost():
   else:
     statcode = "200 OK"
 
-
-  randomtime = random.randint(oldtime, currenttimeepoch)
-  randomtimedate = datetime.datetime.fromtimestamp(randomtime).isoformat()
-  if debugmode is True:
-    print(randomtimedate)
+  if multiindex == False:
+    randomtime = random.randint(oldtime, currenttimeepoch)
+    randomtimedate = datetime.datetime.fromtimestamp(randomtime).isoformat()
+    if debugmode is True:
+      print(randomtimedate)
+  else:
+    randomtime = random.randint(oldtime, newtime)
+    randomtimedate = datetime.datetime.fromtimestamp(randomtime).isoformat()
+    if debugmode is True:
+      print(randomtimedate)
 
   clientrandomip = ipaddress[random.randint(0, 149)]
 
@@ -576,8 +584,8 @@ cert = ("/Users/chris/git/analytics/apictesttools/mounted/certs/tls.crt",
         "/Users/chris/git/analytics/apictesttools/mounted/certs/tls.key")
 
 
-def realpost(arg1):
-  outfile = open("Output/post"+str(arg1)+".txt")
+def realpost(post_num):
+  outfile = open("Output/post"+str(post_num)+".txt")
   databuffer = outfile.read()
   outfile.close()
   requests.post(ingestion_url+"/ingestion", cert=cert,
@@ -609,32 +617,41 @@ def firereports():
       os.remove("Reports/Report"+str(x)+".json")
 
 
-def percall(arg1):
+def percall(post_num, newtime, oldtime):
   posts = []
   for b in range(0, num_of_events):
-    # print("Creating post data for loop {}, [{} / {}]".format(str(arg1),str(b),str(num_of_calls)))
+    # print("Creating post data for loop {}, [{} / {}]".format(str(post_num),str(b),str(num_of_calls)))
     if debugmode is True:
       print(b)
-    posts.append(createpost())
+    posts.append(createpost(newtime, oldtime))
   if debugmode is True:
     print(posts)
+  post_name = postName(post_num)
   if dryrunRequests is True:
-    fakepost("post"+str(arg1), posts)
+    fakepost("post"+ postName(post_num), posts)
   else:
-    fakepost("post"+str(arg1), posts)
-    realpost(arg1)
-    os.remove("Output/post"+str(arg1)+".txt")
-    print("Sent post {}".format(str(arg1)))
+    fakepost("post"+post_name, posts)
+    realpost(post_name)
+    os.remove("Output/post"+post_name+".txt")
+    print("Sent post {}".format(post_name))
+
+def postName(post_num):
+  if multiindex == True:
+    return str(datetime.datetime.fromtimestamp(oldtime).date())
+  else:
+    return str(post_num)
 
 if multiindex == False:
   with concurrent.futures.ThreadPoolExecutor(max_workers=7) as executor:
     for i in range(0, num_of_loops):
-      future = executor.submit(percall, i)
+      future = executor.submit(percall, i, newtime, oldtime)
   result = future.result()
 else:
   for i in range(0, num_of_loops):
-      percall(i)
-      # time.sleep(1)
+    percall(i, newtime, oldtime)
+    oldtime = oldtime + (24 * 3600)
+    newtime = newtime + (24 * 3600)
+    # time.sleep(1)
 print(Fore.GREEN+"Posted "+Fore.RESET+str(num_of_loops)+Fore.GREEN+" of "+Fore.RESET+str(num_of_loops)+Fore.GREEN+" posts"+Fore.RESET)
 
 print("Starting reports")

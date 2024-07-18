@@ -649,6 +649,7 @@ if multiindex == False:
 else:
   for i in range(0, num_of_loops):
     percall(i, newtime, oldtime)
+    # print("Posted data for loop starting at " + str(datetime.datetime.fromtimestamp(oldtime).date()))
     oldtime = oldtime + (24 * 3600)
     newtime = newtime + (24 * 3600)
     # time.sleep(1)

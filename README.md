@@ -6,6 +6,7 @@ apictesttools is a program that generates random API data in a jsonlines format 
 
 A number of key parameters for the program can be specified in an attached config.json file or as arguments when the program is executed from the command line.
 
+Command line arguments:
 ```
 python ./fireevents.py -h 
 usage: fireevents.py [-h] [-d [DEBUG]] [-e [DRYRUN]]
@@ -47,6 +48,7 @@ options:
                         APIs)
 ```
 
+Config file:
 ```
 {
   "dryrunReports" : true,

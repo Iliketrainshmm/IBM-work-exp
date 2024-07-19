@@ -47,6 +47,31 @@ options:
                         APIs)
 ```
 
+```
+{
+  "dryrunReports" : true,
+  "percent_ai_requests": 0.1,
+  "dryrunRequests" : true,
+  "ingestion_URL": "https://ai.cdm0701.supergirl.dev.ciondemand.com",
+  "director_URL": "analytics-director:3009",
+  "number_of_apis": 5,
+  "number_of_apps": 5,
+  "number_of_corgs": 3,
+  "number_of_products": 3,
+  "number_of_loops_to_make": 10,
+  "scopes": [
+    {
+      "id": "dcef2f41-770e-4bbd-abc4-4adbf510b99f/113b4724-1ef8-4a4a-8295-3555862cd127",
+      "name": "ibm/sandbox"
+    },
+    {
+      "id": "dcef2f41-770e-4bbd-abc4-4adbf510b99f/3140821c-c2fe-4f09-a0e1-dd2a9e14c381",
+      "name": "ibm/api-connect-catalog-1"
+    }
+  ]
+}
+```
+
 ## Default mode
 
 The default mode performs loops of 100 API calls, each of which is added to a numbered post (default 10 loops, but this can be changed in the config file or entered as a command line argument).

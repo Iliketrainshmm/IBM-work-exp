@@ -3,6 +3,7 @@
   "percent_ai_requests": 0.1,
   "dryrunRequests" : true,
   "ingestion_URL": "https://ai.cdm0701.supergirl.dev.ciondemand.com",
+  "director_URL": "analytics-director:3009",
   "number_of_apis": 5,
   "number_of_apps": 5,
   "number_of_corgs": 3,

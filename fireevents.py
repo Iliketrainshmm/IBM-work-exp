@@ -108,6 +108,8 @@ parser.add_argument('-m', '--multiindex', help='Executes serially from 30 days a
                     required=False,type=bool, const=True, nargs='?')
 parser.add_argument('-u', '--ingestionurl', metavar='ingest_url', type=str, required=False, nargs='?',
                     help='Ingestion url to fake/make calls')
+parser.add_argument('-f', '--directorurl', metavar='direct_url', type=str, required=False, nargs='?',
+                    help='Director url to rollover in multiindex mode')
 parser.add_argument('-a', '--numberofapis', metavar='numbofapis', type=int, required=False, nargs='?', default=configPresent(5),
                     help='Total number of APIs (Should be equal to or more than the number of Products)')
 parser.add_argument('-b', '--numberofapps', metavar='numbofapps', type=int, required=False, nargs='?', default=configPresent(5),
@@ -135,6 +137,7 @@ if config != None:
 
 # Defined for error if no input
 ingestion_url = None
+director_url = None
 
 # Other config info, without parser defaults
 if config == None:
@@ -152,6 +155,7 @@ if config == None:
 else:
   percent_ai_calls = float(config["percent_ai_requests"])
   ingestion_url = str(config["ingestion_URL"])
+  director_url = str(config["director_URL"])
   scopes = config["scopes"]
   dryrunReports = bool(config["dryrunReports"])
   dryrunRequests = bool(config["dryrunRequests"])
@@ -187,6 +191,8 @@ if debugmode == True:
 # Input data always overrides config file
 if passed.ingestionurl:
   ingestion_url = passed.ingestionurl
+if passed.directorurl:
+  director_url = passed.directorurl
 if passed.numberofapis:
   num_of_apis = passed.numberofapis
 if passed.numberofapps:
@@ -198,9 +204,13 @@ if passed.numberofproducts:
 if passed.numberofloops:
   num_of_loops = passed.numberofloops
 
-# Abort with error if no ingestion URL in config or arguments
-if ingestion_url == None:
-  sys.exit("Error: no ingestion URL found. Please provide an ingestion URL in a config file or as a command line argument.")
+# Abort with error if no ingestion or director URL in config or arguments
+if multiindex == False:
+  if ingestion_url == None:
+    sys.exit("Error: no ingestion URL found. Please provide an ingestion URL in a config file or as a command line argument.")
+else:
+  if director_url == None:
+    sys.exit("Error: no director URL found. Please provide a director URL in a config file or as a command line argument.")
 
 # Sorts out scopes
 if scopes:
@@ -282,8 +292,8 @@ currenttimeepoch = int(time.time())
 if multiindex == False:
   oldtime = currenttimeepoch-2592000
 else:
-  oldtime = currenttimeepoch - (num_of_loops * 24 * 3600)
-  newtime = oldtime + (24 * 3600)
+  oldtime = currenttimeepoch - (num_of_loops * 24 * 3600) + 1
+  newtime = oldtime + (24 * 3600) - 1
 
 codedata = {
     "codes": [
@@ -588,7 +598,11 @@ def realpost(post_num):
   outfile = open("Output/post"+str(post_num)+".txt")
   databuffer = outfile.read()
   outfile.close()
-  requests.post(ingestion_url+"/ingestion", cert=cert,
+  if multiindex == False:
+    requests.post(ingestion_url+"/ingestion", cert=cert,
+                  data=databuffer, verify=False)
+  else:
+    requests.post(director_url+"/cloud/clustermgmt/storage/apic-api-r/rollover", cert=cert,
                 data=databuffer, verify=False)
 
 
@@ -612,7 +626,11 @@ def firereports():
       infile = open("Reports/Report"+str(x)+".json")
       databuffer = infile.read()
       infile.close()
-      requests.post(ingestion_url+"/all-content", cert=cert,
+      if multiindex == False:
+        requests.post(ingestion_url+"/all-content", cert=cert,
+                    data=databuffer, verify=False)
+      else:
+        requests.post(director_url+"/all-content", cert=cert,
                     data=databuffer, verify=False)
       os.remove("Reports/Report"+str(x)+".json")
 

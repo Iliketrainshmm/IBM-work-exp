@@ -82,6 +82,10 @@ The default mode performs loops of 100 API calls, each of which is added to a nu
 
 The multiindex mode produces loops of 1000 API calls, each of which contains a 24 hour period before the time the program is run, which are then added to a post named with the date at the start of the 24 hour period (default 30 loops/days, but this can also be changed in the config file or as a command line argument).
 
+Activated with the ```-m``` command line argument.
+
 ## Dryrun
 
 apictesttools has dryrun functionality built in, in order to test its API call generation efficacy without requiring communication with an external server.
+
+Activated with the ```-e``` command line argument or by setting ```"dryrunReports"``` and ```"dryrunRequests"``` to ```True``` in the config file.

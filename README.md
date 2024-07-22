@@ -82,4 +82,6 @@ In multiindex mode, the program runs serially and single-threaded to send each l
 
 apictesttools has dryrun functionality built in, in order to test its API call generation efficacy without requiring communication with an external server.
 
+However, to keep output data realistic, an ingestion/director URL must still be included (depending on mode).
+
 Activated with the ```-e``` command line argument or by setting ```"dryrunReports"``` and ```"dryrunRequests"``` to ```True``` in the config file.

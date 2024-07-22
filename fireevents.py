@@ -52,12 +52,12 @@ def configPresent(default):
 # Deals with different scenarios for loop number (and other things) specific to multiindex mode (and generally)
 def multiindexLoops():
   global num_of_loops
-  if multiindex == True:
+  if config != None:
+    num_of_loops = int(config["number_of_loops_to_make"])
+  else:
     global num_of_events
     num_of_events = 1000
     num_of_loops = 30
-  elif config != None:
-    num_of_loops = int(config["number_of_loops_to_make"])
 
 # Important variables to use later for generating fake API data
 # Config in
@@ -118,6 +118,8 @@ parser.add_argument('-c', '--numberofcorgs', metavar='numbofcorgs', type=int, re
                     help='Total number of corgs (Should be equal to or less than the number of Apps)')
 parser.add_argument('-q', '--numberofproducts', metavar='numbofproducts', type=int, required=False, nargs='?', default=configPresent(3),
                     help='Total number of Products (Should be equal to or less than the number of APIs)')
+parser.add_argument('-l', '--numberofloops', metavar='numbofloops', type=int, required=False, nargs='?', default=None,
+                    help='Total number of loops to make')
 
 # Puts arguments in variable
 passed = parser.parse_args()
@@ -176,13 +178,6 @@ if passed.multiindex is True:
   multiindexLoops()
 else:
   multiindex = False
-
-# Command line argument for number of loops (here because multiindex)
-parser.add_argument('-l', '--numberofloops', metavar='numbofloops', type=int, required=False, nargs='?', default=num_of_loops,
-                    help='Total number of loops to make')
-
-# Puts arguments in variable (again - probably unoptimised but who cares)
-passed = parser.parse_args()
 
 # Prints out command line arguments for debugging
 if debugmode == True:

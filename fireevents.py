@@ -106,7 +106,7 @@ parser.add_argument('-e', '--dryrun', help='Generates a post and sends it to ser
                     required=False,type=bool, const=True, nargs='?')
 parser.add_argument('-m', '--multiindex', help='Executes serially from 30 days ago to now (1000 calls per day at random times) with 30 post output files',
                     required=False,type=bool, const=True, nargs='?')
-parser.add_argument('-u', '--ingestionurl', metavar='ingest_url', type=str, required=False, nargs='?',
+parser.add_argument('-i', '--ingestionurl', metavar='ingest_url', type=str, required=False, nargs='?',
                     help='Ingestion url to fake/make calls')
 parser.add_argument('-f', '--directorurl', metavar='direct_url', type=str, required=False, nargs='?',
                     help='Director url to rollover in multiindex mode')
@@ -116,7 +116,7 @@ parser.add_argument('-b', '--numberofapps', metavar='numbofapps', type=int, requ
                     help='--Total number of Apps (Should be equal to or more than the number of corgs)')
 parser.add_argument('-c', '--numberofcorgs', metavar='numbofcorgs', type=int, required=False, nargs='?', default=configPresent(3),
                     help='Total number of corgs (Should be equal to or less than the number of Apps)')
-parser.add_argument('-q', '--numberofproducts', metavar='numbofproducts', type=int, required=False, nargs='?', default=configPresent(3),
+parser.add_argument('-p', '--numberofproducts', metavar='numbofproducts', type=int, required=False, nargs='?', default=configPresent(3),
                     help='Total number of Products (Should be equal to or less than the number of APIs)')
 parser.add_argument('-l', '--numberofloops', metavar='numbofloops', type=int, required=False, nargs='?', default=None,
                     help='Total number of loops to make')
@@ -286,6 +286,7 @@ useragents = getuseragents()
 currenttimeepoch = int(time.time())
 if multiindex == False:
   oldtime = currenttimeepoch-2592000
+  newtime = None
 else:
   oldtime = currenttimeepoch - (num_of_loops * 24 * 3600) + 1
   newtime = oldtime + (24 * 3600) - 1

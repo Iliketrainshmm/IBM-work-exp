@@ -9,8 +9,8 @@ A number of key parameters for the program can be specified in an attached confi
 Command line arguments:
 ```
 python ./fireevents.py -h   
-usage: fireevents.py [-h] [-d [DEBUG]] [-e [DRYRUN]] [-m [MULTIINDEX]] [-u [ingest_url]] [-f [direct_url]] [-a [numbofapis]]
-                     [-b [numbofapps]] [-c [numbofcorgs]] [-q [numbofproducts]] [-l [numbofloops]]
+usage: fireevents.py [-h] [-d [DEBUG]] [-e [DRYRUN]] [-m [MULTIINDEX]] [-i [ingest_url]] [-f [direct_url]] [-a [numbofapis]]
+                     [-b [numbofapps]] [-c [numbofcorgs]] [-p [numbofproducts]] [-l [numbofloops]]
 
 API call faker
 
@@ -22,7 +22,7 @@ options:
                         Generates a post and sends it to server (Will delete it from folder after)
   -m [MULTIINDEX], --multiindex [MULTIINDEX]
                         Executes serially from 30 days ago to now (1000 calls per day at random times) with 30 post output files
-  -u [ingest_url], --ingestionurl [ingest_url]
+  -i [ingest_url], --ingestionurl [ingest_url]
                         Ingestion url to fake/make calls
   -f [direct_url], --directorurl [direct_url]
                         Director url to rollover in multiindex mode
@@ -32,7 +32,7 @@ options:
                         --Total number of Apps (Should be equal to or more than the number of corgs)
   -c [numbofcorgs], --numberofcorgs [numbofcorgs]
                         Total number of corgs (Should be equal to or less than the number of Apps)
-  -q [numbofproducts], --numberofproducts [numbofproducts]
+  -p [numbofproducts], --numberofproducts [numbofproducts]
                         Total number of Products (Should be equal to or less than the number of APIs)
   -l [numbofloops], --numberofloops [numbofloops]
                         Total number of loops to make
@@ -81,5 +81,7 @@ In multiindex mode, the program runs serially and single-threaded to send each l
 ## Dryrun
 
 apictesttools has dryrun functionality built in, in order to test its API call generation efficacy without requiring communication with an external server.
+
+However, to keep output data realistic, an ingestion/director URL must still be included (depending on mode).
 
 Activated with the ```-e``` command line argument or by setting ```"dryrunReports"``` and ```"dryrunRequests"``` to ```True``` in the config file.

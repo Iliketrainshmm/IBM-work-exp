@@ -1,2 +1,5 @@
 Output/*
 Reports/*
+mounted/certs/ca.crt
+mounted/certs/tls.crt
+mounted/certs/tls.key

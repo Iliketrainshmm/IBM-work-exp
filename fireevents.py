@@ -49,8 +49,7 @@ def configPresent(default):
   else:
     return None
 
-# Deals with different scenarios for loop number (and other things) specific to multiindex mode (and generally)
-def multiindexLoops():
+def setNumLoops():
   global num_of_loops
   if config != None:
     num_of_loops = int(config["number_of_loops_to_make"])
@@ -146,12 +145,12 @@ if config == None:
   percent_ai_calls = 0.1
   scopes = [
     {
-      "id": "dcef2f41-770e-4bbd-abc4-4adbf510b99f/113b4724-1ef8-4a4a-8295-3555862cd127",
+      "id": "c7f6b296-a20c-4af2-bf8c-f2e0907cca77/5d9fbb72-1cfe-4441-be80-981b20a4fbe0",
       "name": "ibm/sandbox"
     },
     {
-      "id": "dcef2f41-770e-4bbd-abc4-4adbf510b99f/3140821c-c2fe-4f09-a0e1-dd2a9e14c381",
-      "name": "ibm/api-connect-catalog-1"
+      "id": "c7f6b296-a20c-4af2-bf8c-f2e0907cca77/8fdd0e32-decd-4273-aa53-29ef517cfbac",
+      "name": "ibm/demo"
     }
   ]
 else:
@@ -175,9 +174,9 @@ else:
   dryrunRequests = False
 if passed.multiindex is True:
   multiindex = True
-  multiindexLoops()
 else:
   multiindex = False
+setNumLoops()
 
 # Prints out command line arguments for debugging
 if debugmode == True:
@@ -586,8 +585,9 @@ def createreport(orgname, catalogname, spacename):
   return reportdata
 
 
-cert = ("/Users/chris/git/analytics/apictesttools/mounted/certs/tls.crt",
-        "/Users/chris/git/analytics/apictesttools/mounted/certs/tls.key")
+cwd = os.getcwd()
+cert = (cwd + "/mounted/certs/tls.crt",
+        cwd + "/mounted/certs/tls.key")
 
 
 def realpost(post_num):

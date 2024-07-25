@@ -1,8 +1,8 @@
 {
-  "dryrunReports" : true,
+  "dryrunReports" : false,
   "percent_ai_requests": 0.1,
-  "dryrunRequests" : true,
-  "ingestion_URL": "https://ai.cdm0701.supergirl.dev.ciondemand.com",
+  "dryrunRequests" : false,
+  "ingestion_URL": "https://ai.cdr0725.supergirl.dev.ciondemand.com",
   "director_URL": "analytics-director:3009",
   "number_of_apis": 5,
   "number_of_apps": 5,
@@ -11,12 +11,12 @@
   "number_of_loops_to_make": 30,
   "scopes": [
     {
-      "id": "dcef2f41-770e-4bbd-abc4-4adbf510b99f/113b4724-1ef8-4a4a-8295-3555862cd127",
+      "id": "c7f6b296-a20c-4af2-bf8c-f2e0907cca77/5d9fbb72-1cfe-4441-be80-981b20a4fbe0",
       "name": "ibm/sandbox"
     },
     {
-      "id": "dcef2f41-770e-4bbd-abc4-4adbf510b99f/3140821c-c2fe-4f09-a0e1-dd2a9e14c381",
-      "name": "ibm/api-connect-catalog-1"
+      "id": "c7f6b296-a20c-4af2-bf8c-f2e0907cca77/8fdd0e32-decd-4273-aa53-29ef517cfbac",
+      "name": "ibm/demo"
     }
   ]
 }
